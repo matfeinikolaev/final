@@ -47,7 +47,7 @@ async def login(
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     refresh_token = security.create_refresh_token(data={"sub": str(user.id)})
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer", "id": user.id}
 
 
 @router.post("/refresh", response_model=Token)
@@ -70,7 +70,7 @@ async def refresh_token(refresh_token: str, db: AsyncSession = Depends(get_db)) 
         data={"sub": str(user.id)},
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
-    return {"access_token": new_access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    return {"access_token": new_access_token, "refresh_token": refresh_token, "token_type": "bearer", "id": user.id}
 
 
 @router.post("/change-password", response_model=dict)
