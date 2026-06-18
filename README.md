@@ -17,27 +17,28 @@
 ```
 app/
 ├── api/
-│   ├── deps.py              # Зависимости (текущий пользователь)
+│   ├── deps.py                 # Зависимости (текущий пользователь)
 │   └── v1/
-│       ├── api.py           # Роутер v1
+│       ├── api.py              # Роутер v1
 │       └── endpoints/
-│           ├── auth.py      # Регистрация, логин, смена пароля, refresh
-│           ├── users.py     # Управление пользователями
-│           ├── categories.py# Категории вакансий
-│           ├── jobs.py      # Должности
-│           ├── vacancies.py # Вакансии + статистика
-│           └── resumes.py   # Резюме соискателей
+│           ├── applications.py # Управление подачами резюме на вакансии
+│           ├── auth.py         # Регистрация, логин, смена пароля, refresh
+│           ├── users.py        # Управление пользователями
+│           ├── categories.py   # Категории вакансий
+│           ├── jobs.py         # Должности
+│           ├── vacancies.py    # Вакансии + статистика
+│           └── resumes.py      # Резюме соискателей
 ├── core/
-│   ├── config.py            # Настройки приложения
-│   ├── database.py          # Подключение к БД
-│   └── security.py          # Хэширование паролей, JWT
+│   ├── config.py               # Настройки приложения
+│   ├── database.py             # Подключение к БД
+│   └── security.py             # Хэширование паролей, JWT
 ├── crud/
-│   └── user_crud.py         # CRUD для пользователей
-├── models/                  # SQLAlchemy модели
-├── schemas/                 # Pydantic схемы
-└── main.py                  # Точка входа
-migrations/                  # Alembic миграции
-tests/                       # Pytest тесты
+│   └── user_crud.py            # CRUD для пользователей
+├── models/                     # SQLAlchemy модели
+├── schemas/                    # Pydantic схемы
+└── main.py                     # Точка входа
+migrations/                     # Alembic миграции
+tests/                          # Pytest тесты
 ```
 
 ## Модели данных
