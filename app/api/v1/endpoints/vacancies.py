@@ -3,11 +3,12 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select
 
 from app.api import deps
 from app.core.database import get_db
 from app.models.vacancy import Vacancy, VacancyCategory, VacancyStatus
+from app.models.application import Application
 from app.models.resume import Resume
 from app.models.user import User
 from app.schemas.vacancy import VacancyCreate, VacancyUpdate, VacancyResponse
@@ -56,20 +57,34 @@ async def get_vacancy_stats(
     if not vacancy:
         raise HTTPException(status_code=404, detail="Vacancy not found")
 
-    stats_query = (
-        select(Resume.status, func.count(Resume.id).label("count"))
-        .where(Resume.vacancy_id == vacancy_id, Resume.is_deleted == False)
-        .group_by(Resume.status)
+    apps_result = await db.execute(
+        select(Application, Resume, User)
+        .join(Resume, Resume.id == Application.resume_id, isouter=True)
+        .join(User, User.id == Resume.applicant_id, isouter=True)
+        .where(Application.vacancy_id == vacancy_id, Application.is_deleted == False)
     )
-    stats_result = await db.execute(stats_query)
-    stats = {row.status: row.count for row in stats_result}
+    rows = apps_result.all()
 
-    total_result = await db.execute(
-        select(func.count(Resume.id)).where(Resume.vacancy_id == vacancy_id, Resume.is_deleted == False)
-    )
-    total = total_result.scalar()
+    applicants = [
+        {
+            "application_id": str(app.id),
+            "resume_id": str(app.resume_id) if app.resume_id else None,
+            "resume_status": resume.status if resume else None,
+            "resume_category": resume.category if resume else None,
+            "resume_description": resume.description if resume else None,
+            "applicant_id": str(user.id) if user else None,
+            "applicant_email": user.email if user else None,
+            "applicant_name": user.full_name if user else None,
+        }
+        for app, resume, user in rows
+    ]
 
-    return {"vacancy_id": str(vacancy_id), "title": vacancy.title, "total_resumes": total, "by_status": stats}
+    return {
+        "vacancy_id": str(vacancy_id),
+        "title": vacancy.title,
+        "total_applications": len(applicants),
+        "applicants": applicants,
+    }
 
 
 @router.post("/", response_model=VacancyResponse, status_code=status.HTTP_201_CREATED)

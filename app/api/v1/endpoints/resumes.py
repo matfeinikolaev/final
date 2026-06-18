@@ -10,7 +10,6 @@ from app.core.database import get_db
 from app.models.resume import Resume, ResumeCategory, ResumeStatus
 from app.models.user import User
 from app.schemas.resume import ResumeCreate, ResumeUpdate, ResumeResponse
-
 router = APIRouter()
 
 
@@ -21,7 +20,6 @@ async def get_resumes(
     limit: int = 100,
     category: Optional[ResumeCategory] = None,
     status: Optional[ResumeStatus] = None,
-    vacancy_id: Optional[UUID] = None,
     current_user: User = Depends(deps.get_current_active_user),
 ) -> Any:
     query = select(Resume).where(Resume.is_deleted == False)
@@ -29,8 +27,6 @@ async def get_resumes(
         query = query.where(Resume.category == category)
     if status:
         query = query.where(Resume.status == status)
-    if vacancy_id:
-        query = query.where(Resume.vacancy_id == vacancy_id)
     query = query.offset(skip).limit(limit)
     result = await db.execute(query)
     return result.scalars().all()

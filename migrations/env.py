@@ -8,7 +8,7 @@ from alembic import context
 
 from app.core.config import settings
 from app.core.database import Base
-from app.models import user, category, job, vacancy, resume  # noqa: F401
+from app.models import user, category, job, vacancy, resume, application  # noqa: F401
 
 config = context.config
 

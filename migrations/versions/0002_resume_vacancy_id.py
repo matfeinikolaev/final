@@ -14,16 +14,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.drop_constraint("resumes_job_id_fkey", "resumes", type_="foreignkey")
-    op.alter_column("resumes", "job_id", new_column_name="vacancy_id")
-    op.create_foreign_key(
-        "resumes_vacancy_id_fkey", "resumes", "vacancies", ["vacancy_id"], ["id"], ondelete="SET NULL"
-    )
+    pass
 
 
 def downgrade() -> None:
-    op.drop_constraint("resumes_vacancy_id_fkey", "resumes", type_="foreignkey")
-    op.alter_column("resumes", "vacancy_id", new_column_name="job_id")
-    op.create_foreign_key(
-        "resumes_job_id_fkey", "resumes", "jobs", ["job_id"], ["id"], ondelete="SET NULL"
-    )
+    pass

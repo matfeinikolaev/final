@@ -23,14 +23,10 @@ class ResumeCategory(str, enum.Enum):
 class Resume(IsDeletedModel):
     __tablename__ = "resumes"
 
-    applicant_name = Column(String(200), nullable=False)
-    applicant_email = Column(String(200), nullable=True)
+    applicant_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     description = Column(Text, nullable=True)
     category = Column(SQLEnum(ResumeCategory), nullable=True)
     status = Column(SQLEnum(ResumeStatus), nullable=False, default=ResumeStatus.NEW)
-    vacancy_id = Column(UUID(as_uuid=True), ForeignKey("vacancies.id", ondelete="SET NULL"), nullable=True)
-
-    vacancy = relationship("Vacancy", lazy="selectin")
 
     def __repr__(self):
-        return f"<Resume {self.applicant_name}>"
+        return f"<Resume {self.id}>"
